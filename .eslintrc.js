@@ -13,6 +13,7 @@ module.exports = {
 		indent: ['error', 'tab', { SwitchCase: 1 }],
 		'no-tabs': 0,
 		'vue/html-indent': 'off',
-		'vue/singleline-html-element-content-newline': 'off'
+		'vue/singleline-html-element-content-newline': 'off',
+		'no-console': 'off'
 	}
 }
