@@ -14,6 +14,7 @@ module.exports = {
 		'no-tabs': 0,
 		'vue/html-indent': 'off',
 		'vue/singleline-html-element-content-newline': 'off',
-		'no-console': 'off'
+		'no-console': 'off',
+		'space-before-function-paren': 'off'
 	}
 }
