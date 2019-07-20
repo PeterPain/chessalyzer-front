@@ -6,7 +6,7 @@ export default {
 	 ** Headers of the page
 	 */
 	head: {
-		title: process.env.npm_package_name || '',
+		title: 'Chessalyzer',
 		meta: [
 			{ charset: 'utf-8' },
 			{
@@ -19,12 +19,19 @@ export default {
 				content: process.env.npm_package_description || ''
 			}
 		],
-		link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
+		link: [
+			{
+				rel: 'icon',
+				type: 'image/svg+xml',
+				href: '/logo_b.svg',
+				sizes: 'any'
+			}
+		]
 	},
 	/*
 	 ** Customize the progress-bar color
 	 */
-	loading: { color: '#fff' },
+	loading: false,
 	/*
 	 ** Global CSS
 	 */

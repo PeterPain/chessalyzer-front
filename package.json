@@ -1,37 +1,38 @@
 {
-	"name": "chessalyzer-front",
-	"version": "1.0.0",
-	"description": "My great Nuxt.js project",
-	"author": "PeterPain",
-	"private": true,
-	"scripts": {
-		"lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
-		"precommit": "npm run lint",
-		"dev": "nuxt",
-		"build": "nuxt build",
-		"start": "nuxt start",
-		"generate": "nuxt generate"
-	},
-	"dependencies": {
-		"@nuxtjs/axios": "^5.5.4",
-		"bootstrap": "^4.3.1",
-		"bootstrap-vue": "^2.0.0-rc.26",
-		"heatboard.js": "github:PeterPain/heatboard.js",
-		"nuxt": "^2.8.1"
-	},
-	"devDependencies": {
-		"@nuxtjs/eslint-config": "^1.0.1",
-		"@nuxtjs/eslint-module": "^0.2.1",
-		"babel-eslint": "^10.0.2",
-		"eslint": "^6.0.1",
-		"eslint-config-standard": "^13.0.1",
-		"eslint-plugin-import": "^2.18.1",
-		"eslint-plugin-jest": "^22.11.1",
-		"eslint-plugin-node": ">=9.1.0",
-		"eslint-plugin-nuxt": ">=0.4.3",
-		"eslint-plugin-promise": ">=4.2.1",
-		"eslint-plugin-standard": ">=4.0.0",
-		"eslint-plugin-vue": "^5.2.3",
-		"nodemon": "^1.19.1"
-	}
+  "name": "chessalyzer-front",
+  "version": "1.0.0",
+  "description": "My great Nuxt.js project",
+  "author": "PeterPain",
+  "private": true,
+  "scripts": {
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore .",
+    "precommit": "npm run lint",
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "@nuxtjs/axios": "^5.5.4",
+    "bootstrap": "^4.3.1",
+    "bootstrap-vue": "^2.0.0-rc.26",
+    "chokidar": "^3.0.2",
+    "heatboard.js": "github:PeterPain/heatboard.js",
+    "nuxt": "^2.8.1"
+  },
+  "devDependencies": {
+    "@nuxtjs/eslint-config": "^1.0.1",
+    "@nuxtjs/eslint-module": "^0.2.1",
+    "babel-eslint": "^10.0.2",
+    "eslint": "^6.0.1",
+    "eslint-config-standard": "^13.0.1",
+    "eslint-plugin-import": "^2.18.1",
+    "eslint-plugin-jest": "^22.11.1",
+    "eslint-plugin-node": ">=9.1.0",
+    "eslint-plugin-nuxt": ">=0.4.3",
+    "eslint-plugin-promise": ">=4.2.1",
+    "eslint-plugin-standard": ">=4.0.0",
+    "eslint-plugin-vue": "^5.2.3",
+    "nodemon": "^1.19.1"
+  }
 }
