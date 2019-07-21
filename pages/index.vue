@@ -3,15 +3,21 @@
 		<h1 class="title">Analyze!</h1>
 		<b-row>
 			<b-col>
-				<b-form-input id="bla" v-model="sliderVal" type="range" min="0" max="3000"></b-form-input>
-				{{sliderVal}}
-				<b-form-group label="Available Analyses">
+				<bank-display
+					v-for="(item, index) in dbData"
+					:key="index"
+					:nr="index"
+					:data="item"
+					:isSelected="selectedBank === index"
+					@clicked="selectedBank = index"
+				/>
+				<b-form-group label="Available Heatmaps">
 					<b-form-radio
-						v-for="(item, index) in dbData"
+						v-for="(item, index) in heatmaps"
 						:key="index"
-						v-model="selectedData"
+						v-model="selectedHeatmap"
 						:value="index"
-					>{{ index + ": " + item.cntMoves + " moves." }}</b-form-radio>
+					>{{ item }}</b-form-radio>
 				</b-form-group>
 			</b-col>
 
@@ -22,20 +28,27 @@
 </template>
 
 <script>
+import BankDisplay from '@/components/BankDisplay'
+
 const server = 'localhost' // 'raspi-4'
 const port = 3001
 let board
 export default {
+	components: {
+		'bank-display': BankDisplay
+	},
 	data() {
 		return {
-			sliderVal: 0,
 			lastMoSquare: 'a1',
 			dbData: [],
-			selectedData: 0
+			heatmaps: [],
+			selectedBank: 0,
+			selectedHeatmap: 0
 		}
 	},
 	created() {
 		this.syncDb()
+		this.getHeatmaps()
 	},
 	mounted() {
 		require('heatboard.js')
@@ -50,8 +63,9 @@ export default {
 		async analyze() {
 			await this.$axios.$post(`http://${server}:${port}/analyze/runbatch`, {
 				path: './test/lichess_db_standard_rated_2013-12.pgn',
+				// path: './test/YanSch_Gimker.pgn',
 				// path: '../pgn/lichess_db_standard_rated_2013-01_min.pgn',
-				trackers: ['TileTrackerBase']
+				trackers: ['GameTrackerBase', 'PieceTrackerBase', 'TileTrackerBase']
 			})
 			this.syncDb()
 			this.generateHeatmap(this.lastMoSquare)
@@ -71,10 +85,10 @@ export default {
 			this.lastMoSquare = square
 			if (this.dbData.length > 0) {
 				const data = await this.$axios.$post(
-					`http://${server}:${port}/analyze/getheatmap`,
+					`http://${server}:${port}/analyze/generateheatmap`,
 					{
-						id: this.selectedData,
-						name: 'TILE_OCC_BY_PIECE',
+						id: this.selectedBank,
+						name: this.heatmaps[this.selectedHeatmap],
 						square
 					}
 				)
@@ -84,6 +98,11 @@ export default {
 		async syncDb() {
 			this.dbData = await this.$axios.$get(
 				`http://${server}:${port}/analyze/db`
+			)
+		},
+		async getHeatmaps() {
+			this.heatmaps = await this.$axios.$get(
+				`http://${server}:${port}/analyze/heatmaps`
 			)
 		}
 	}
