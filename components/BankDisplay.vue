@@ -1,8 +1,11 @@
 <template>
-	<div @click="$emit('clicked')" class="bank_display">
+	<div @click="$emit('clicked')" class="bank-display">
 		<b-row no-gutters>
-			<div class="nr_display" :class="{ selected: isSelected }">{{ nr }}</div>
-			<b-col>{{ data.cntGames + " games (" + data.cntMoves + " moves)"}}</b-col>
+			<div class="nr-display" :class="{ selected: isSelected }" align="center">{{ nr }}</div>
+			<b-col class="info-display align-self-center">
+				<b>{{ data.name + ": "}}</b>
+				{{ data.cntGames + " games (" + data.cntMoves + " moves)"}}
+			</b-col>
 		</b-row>
 	</div>
 </template>
@@ -19,19 +22,24 @@ export default {
 </script>
 
 <style scoped>
-.nr_display {
+.nr-display {
 	padding: 5px;
-	width: 30px;
+	width: 34px;
 	background-color: gray;
 	color: white;
 }
 
-.bank_display {
+.info-display {
+	padding-left: 5px;
+}
+
+.bank-display {
 	border: 1px solid black;
 	cursor: pointer;
 }
 
 .selected {
 	background-color: darkcyan;
+	font-weight: bold;
 }
 </style>

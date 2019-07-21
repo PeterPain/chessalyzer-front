@@ -22,8 +22,8 @@ export default {
 		link: [
 			{
 				rel: 'icon',
-				type: 'image/svg+xml',
-				href: '/logo_b.svg',
+				type: 'image/png',
+				href: '/logo_b.png',
 				sizes: 'any'
 			}
 		]

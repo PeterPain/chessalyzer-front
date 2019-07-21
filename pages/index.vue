@@ -17,7 +17,7 @@
 						:key="index"
 						v-model="selectedHeatmap"
 						:value="index"
-					>{{ item }}</b-form-radio>
+					>{{ item.short_name }}</b-form-radio>
 				</b-form-group>
 			</b-col>
 
@@ -46,9 +46,20 @@ export default {
 			selectedHeatmap: 0
 		}
 	},
+	watch: {
+		selectedHeatmap() {
+			this.generateHeatmap(this.lastMoSquare)
+		},
+		selectedBank() {
+			this.generateHeatmap(this.lastMoSquare)
+		}
+	},
 	created() {
-		this.syncDb()
-		this.getHeatmaps()
+		;(async () => {
+			await this.syncDb()
+			await this.getHeatmaps()
+			await this.generateHeatmap(this.lastMoSquare)
+		})()
 	},
 	mounted() {
 		require('heatboard.js')
@@ -56,9 +67,10 @@ export default {
 		board = window.Chessboard('board', {
 			position: 'start',
 			draggable: true,
-			onMouseoverSquare: this.generateHeatmap
+			onMouseoverSquare: this.chessboardMouseOver
 		})
 	},
+
 	methods: {
 		async analyze() {
 			await this.$axios.$post(`http://${server}:${port}/analyze/runbatch`, {
@@ -77,18 +89,27 @@ export default {
 				autoscale ? data[1] : 0,
 				autoscale ? data[2] : 100,
 				[255, 128, 0],
-				'',
+				this.heatmaps[this.selectedHeatmap].unit,
 				1000
 			)
 		},
-		async generateHeatmap(square) {
+
+		chessboardMouseOver(square) {
 			this.lastMoSquare = square
+			if (
+				this.dbData.length > 0 &&
+				this.heatmaps[this.selectedHeatmap].scope !== 'global'
+			) {
+				this.generateHeatmap(square)
+			}
+		},
+		async generateHeatmap(square) {
 			if (this.dbData.length > 0) {
 				const data = await this.$axios.$post(
 					`http://${server}:${port}/analyze/generateheatmap`,
 					{
 						id: this.selectedBank,
-						name: this.heatmaps[this.selectedHeatmap],
+						name: this.heatmaps[this.selectedHeatmap].short_name,
 						square
 					}
 				)
