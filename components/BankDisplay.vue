@@ -32,6 +32,9 @@ export default {
 .info-display {
 	padding-left: 5px;
 }
+.bank-display:hover {
+	background-color: lightgray;
+}
 
 .bank-display {
 	border: 1px solid black;

@@ -1,6 +1,38 @@
 <template>
 	<b-container class="basic-container bg-light">
 		<h1 class="title">Analyze!</h1>
+
+		<b-row>
+			<b-card>
+				<b-form-input placeholder="Name your analysis!"></b-form-input>
+				<b-dropdown text="White Player" class="m-md-2">
+					<b-dropdown-item>First Action</b-dropdown-item>
+					<b-dropdown-item>Second Action</b-dropdown-item>
+					<b-dropdown-item>Third Action</b-dropdown-item>
+				</b-dropdown>
+				<b-dropdown text="Black Player" class="m-md-2">
+					<b-dropdown-item>First Action</b-dropdown-item>
+					<b-dropdown-item>Second Action</b-dropdown-item>
+					<b-dropdown-item>Third Action</b-dropdown-item>
+				</b-dropdown>
+				<b-dropdown text="White Elo" class="m-md-2">
+					<b-dropdown-item>First Action</b-dropdown-item>
+					<b-dropdown-item>Second Action</b-dropdown-item>
+					<b-dropdown-item>Third Action</b-dropdown-item>
+				</b-dropdown>
+				<b-dropdown text="Black Elo" class="m-md-2">
+					<b-dropdown-item>First Action</b-dropdown-item>
+					<b-dropdown-item>Second Action</b-dropdown-item>
+					<b-dropdown-item>Third Action</b-dropdown-item>
+				</b-dropdown>
+				<b-dropdown text="Variant" class="m-md-2">
+					<b-dropdown-item>First Action</b-dropdown-item>
+					<b-dropdown-item>Second Action</b-dropdown-item>
+					<b-dropdown-item>Third Action</b-dropdown-item>
+				</b-dropdown>
+				<b-button class="m-md-2" variant="primary" @click="analyze()">Analyze!</b-button>
+			</b-card>
+		</b-row>
 		<b-row>
 			<b-col>
 				<bank-display
@@ -8,7 +40,7 @@
 					:key="index"
 					:nr="index"
 					:data="item"
-					:isSelected="selectedBank === index"
+					:is-selected="selectedBank === index"
 					@clicked="selectedBank = index"
 				/>
 				<b-form-group label="Available Heatmaps">
@@ -23,7 +55,6 @@
 
 			<div id="board" style="width: 500px"></div>
 		</b-row>
-		<b-button variant="primary" @click="analyze()">Analyze!</b-button>
 	</b-container>
 </template>
 
@@ -58,17 +89,17 @@ export default {
 		;(async () => {
 			await this.syncDb()
 			await this.getHeatmaps()
-			await this.generateHeatmap(this.lastMoSquare)
 		})()
 	},
 	mounted() {
-		require('heatboard.js')
+		require('@/assets/chessboard.js')
 		// draw chessboard
 		board = window.Chessboard('board', {
 			position: 'start',
 			draggable: true,
 			onMouseoverSquare: this.chessboardMouseOver
 		})
+		this.generateHeatmap(this.lastMoSquare)
 	},
 
 	methods: {
@@ -88,9 +119,15 @@ export default {
 				data[0],
 				autoscale ? data[1] : 0,
 				autoscale ? data[2] : 100,
-				[255, 128, 0],
-				this.heatmaps[this.selectedHeatmap].unit,
-				1000
+				{
+					unit: this.heatmaps[this.selectedHeatmap].unit,
+					animTime: 0.5,
+					scaling: (val, max) => {
+						return val / max
+					},
+					disableSquares: true,
+					color: [3, 173, 252]
+				}
 			)
 		},
 
