@@ -8,13 +8,14 @@
 				<div v-if="isSelected" class="filter-section">
 					Filter
 					<ul>
-						<li>White Player: {{ data.filter.whitePlayer }}</li>
-						<li>Black Player: {{ data.filter.blackPlayer }}</li>
-						<li>White Elo range: {{ data.filter.whiteElo[0] }} to {{ data.filter.whiteElo[1] }}</li>
-						<li>Black Elo range: {{ data.filter.blackElo[0] }} to {{ data.filter.blackElo[1] }}</li>
-						<li>Elo difference range: {{ data.filter.eloDiff[0] }} to {{ data.filter.eloDiff[1] }}</li>
+						<li>White Player: {{ data.filter.whitePlayer === '' ? 'All' : data.filter.whitePlayer }}</li>
+						<li>Black Player: {{ data.filter.blackPlayer === '' ? 'All' : data.filter.blackPlayer }}</li>
+						<li>White Elo: {{ data.filter.whiteElo[0] }} to {{ data.filter.whiteElo[1] }}</li>
+						<li>Black Elo: {{ data.filter.blackElo[0] }} to {{ data.filter.blackElo[1] }}</li>
+						<li>Elo difference: {{ data.filter.eloDiff[0] }} to {{ data.filter.eloDiff[1] }}</li>
 						<li>Result: {{ data.filter.result }}</li>
 					</ul>
+					<b-button @click="$emit('delete', nr)" size="sm" variant="danger">Delete</b-button>
 				</div>
 			</b-col>
 		</b-row>

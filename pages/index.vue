@@ -112,6 +112,7 @@
 					:data="item"
 					:is-selected="selectedBank === index"
 					@clicked="selectedBank = index"
+					@delete="deleteDbEntry($event)"
 				/>
 				<!-- BANK DISPLAY END -->
 
@@ -206,8 +207,8 @@ export default {
 		async analyze() {
 			this.analysisLoading = true
 			await this.$axios.$post(`http://${server}:${port}/analyze/runbatch`, {
-				// path: './test/lichess_db_standard_rated_2013-12.pgn',
-				path: './test/YanSch_Gimker.pgn',
+				path: './test/lichess_db_standard_rated_2013-12.pgn',
+				// path: './test/YanSch_Gimker.pgn',
 				// path: './test/lichess_db_standard_rated_2013-01_min.pgn',
 				trackers: ['GameTrackerBase', 'PieceTrackerBase', 'TileTrackerBase'],
 				name: this.analysisName,
@@ -217,7 +218,7 @@ export default {
 			await this.syncDb()
 			this.selectedBank = this.dbData.length - 1
 			console.log(this.selectedBank)
-			this.generateHeatmap(this.lastMoSquare)
+
 			this.analysisLoading = false
 		},
 
@@ -244,7 +245,13 @@ export default {
 				`http://${server}:${port}/analyze/db`
 			)
 		},
-
+		async deleteDbEntry(nr) {
+			await this.$axios.$delete(`http://${server}:${port}/analyze/${nr}`)
+			await this.syncDb()
+			if (this.selectedBank > this.dbData.length - 1) {
+				this.selectedBank = this.dbData.length - 1
+			}
+		},
 		// get available heatmaps from server
 		async getHeatmaps() {
 			this.heatmaps = await this.$axios.$get(
