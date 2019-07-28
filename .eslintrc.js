@@ -12,9 +12,10 @@ module.exports = {
 	rules: {
 		indent: ['error', 'tab', { SwitchCase: 1 }],
 		'no-tabs': 0,
-		'vue/html-indent': 'off',
-		'vue/singleline-html-element-content-newline': 'off',
-		'no-console': 'off',
-		'space-before-function-paren': 'off'
+		'vue/html-indent': 0,
+		'vue/singleline-html-element-content-newline': 0,
+		'no-console': 0,
+		'space-before-function-paren': 0,
+		'vue/html-self-closing': 0
 	}
 }

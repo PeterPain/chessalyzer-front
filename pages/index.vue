@@ -38,8 +38,8 @@
 							</b-col>
 						</b-row>
 						<vue-slider
-							class="elo-slider"
 							v-model="gameFilter.whiteElo"
+							class="elo-slider"
 							:min="0"
 							:max="maxElo"
 							:tooltip="'none'"
@@ -59,8 +59,8 @@
 							</b-col>
 						</b-row>
 						<vue-slider
-							class="elo-slider"
 							v-model="gameFilter.blackElo"
+							class="elo-slider"
 							:min="0"
 							:max="maxElo"
 							:tooltip="'none'"
@@ -80,8 +80,8 @@
 							</b-col>
 						</b-row>
 						<vue-slider
-							class="elo-slider"
 							v-model="gameFilter.eloDiff"
+							class="elo-slider"
 							:min="0"
 							:max="1500"
 							:tooltip="'none'"
@@ -103,8 +103,8 @@
 			<!-- FILTER SECTION END -->
 		</b-row>
 		<b-row>
-			<!-- BANK DISPLAY START -->
 			<b-col cols="4">
+				<!-- BANK DISPLAY START -->
 				<bank-display
 					v-for="(item, index) in dbData"
 					:key="index"
@@ -113,6 +113,9 @@
 					:is-selected="selectedBank === index"
 					@clicked="selectedBank = index"
 				/>
+				<!-- BANK DISPLAY END -->
+
+				<!-- HEATMAP DISPLAY START -->
 				<b-form-group label="Available Heatmaps">
 					<b-form-radio
 						v-for="(item, index) in heatmaps"
@@ -121,8 +124,9 @@
 						:value="index"
 					>{{ item.short_name }}</b-form-radio>
 				</b-form-group>
+				<!-- HEATMAP DISPLAY END -->
+				<b-form-checkbox v-model="comparison">Comparison Heatmap</b-form-checkbox>
 			</b-col>
-			<!-- BANK DISPLAY END -->
 
 			<!-- CHESSBOARD START -->
 			<div id="board" style="width: 500px"></div>
@@ -155,6 +159,7 @@ export default {
 			heatmaps: [],
 			selectedBank: 0,
 			selectedHeatmap: 0,
+			comparison: false,
 			analysisName: 'Franz',
 			nGames: 1000,
 			analysisLoading: false,
@@ -173,6 +178,9 @@ export default {
 			this.generateHeatmap(this.lastMoSquare)
 		},
 		selectedBank() {
+			this.generateHeatmap(this.lastMoSquare)
+		},
+		comparison() {
 			this.generateHeatmap(this.lastMoSquare)
 		}
 	},
@@ -198,8 +206,8 @@ export default {
 		async analyze() {
 			this.analysisLoading = true
 			await this.$axios.$post(`http://${server}:${port}/analyze/runbatch`, {
-				path: './test/lichess_db_standard_rated_2013-12.pgn',
-				// path: './test/YanSch_Gimker.pgn',
+				// path: './test/lichess_db_standard_rated_2013-12.pgn',
+				path: './test/YanSch_Gimker.pgn',
 				// path: './test/lichess_db_standard_rated_2013-01_min.pgn',
 				trackers: ['GameTrackerBase', 'PieceTrackerBase', 'TileTrackerBase'],
 				name: this.analysisName,
@@ -219,7 +227,9 @@ export default {
 				const data = await this.$axios.$post(
 					`http://${server}:${port}/analyze/generateheatmap`,
 					{
-						id: this.selectedBank,
+						id: this.comparison
+							? [this.selectedBank, this.selectedBank + 1]
+							: [this.selectedBank],
 						name: this.heatmaps[this.selectedHeatmap].short_name,
 						square
 					}
@@ -244,15 +254,25 @@ export default {
 
 		// draw heatmap
 		drawHeatmap(data) {
-			board.drawHeatmap(data[0], data[1], data[2], {
-				unit: this.heatmaps[this.selectedHeatmap].unit,
-				animTime: 0.5,
-				scaling: (val, max) => {
-					return val / max
-				},
-				disableSquares: true,
-				color: [3, 173, 252]
-			})
+			if (this.comparison) {
+				board.drawComparisonHeatmap(data[0], data[1], data[2], {
+					animTime: 0.5,
+					scaling: (val, max) => {
+						return val / max
+					},
+					disableSquares: true
+				})
+			} else {
+				board.drawHeatmap(data[0], data[1], data[2], {
+					unit: this.heatmaps[this.selectedHeatmap].unit,
+					animTime: 0.5,
+					scaling: (val, max) => {
+						return val / max
+					},
+					disableSquares: true,
+					color: [3, 173, 252]
+				})
+			}
 		},
 
 		// mouseover function for chessboard

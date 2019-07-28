@@ -1750,7 +1750,6 @@
 		// ============================
 		widget.drawHeatmap = function(map, min, max, config = {}) {
 			// check config
-
 			const cfg = checkHeatmapConfig(config)
 
 			// disable board
@@ -1799,11 +1798,6 @@
 						else
 							heatVal.css({
 								display: ''
-								// color: $.Color(
-								// 	200 * alpha,
-								// 	200 * alpha,
-								// 	200 * alpha
-								// )
 							})
 					}
 				}
@@ -1814,7 +1808,10 @@
 			}
 		}
 
-		widget.drawComparisonHeatmap = function(map, min, max) {
+		widget.drawComparisonHeatmap = function(map, min, max, config = {}) {
+			// check config
+			const cfg = checkHeatmapConfig(config)
+
 			// disable board
 			disableSquares()
 
@@ -1827,13 +1824,13 @@
 			if (Math.abs(min) > max) max = Math.abs(min)
 			for (let i = 0; i < 8; i++) {
 				for (let j = 0; j < 8; j++) {
-					let color = map[i][j] >= 0 ? [0, 215, 0] : [255, 0, 0]
+					let color = map[i][j] >= 0 ? [50, 255, 0] : [255, 50, 0]
 					let col = COLUMNS[j]
 					let row = 8 - i
-					let alpha = Math.sqrt(Math.abs(map[i][j]) / max).toFixed(2)
+					let alpha = cfg.scaling(Math.abs(map[i][j]), max).toFixed(2)
 					let value = Math.abs(map[i][j]).toFixed(2)
 					let tile = $('#heat-' + squareElsIds[col + row])
-					let animTime = (1.5 - Math.pow(alpha, 4)) * 1000
+					let animTime = (cfg.animTime - Math.pow(alpha, 4)) * 1000
 					tile.animate(
 						{
 							backgroundColor: $.Color(
