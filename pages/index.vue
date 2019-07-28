@@ -3,12 +3,15 @@
 		<h1 class="title">Analyze!</h1>
 
 		<b-row>
+			<!-- FILTER SECTION START -->
 			<b-card>
 				<b-row>
 					<b-col>
+						Name
 						<b-form-input v-model="analysisName" placeholder="Give your analysis a name"></b-form-input>
 					</b-col>
 					<b-col>
+						Amount of games
 						<b-form-input v-model="nGames" placeholder="How many games?"></b-form-input>
 					</b-col>
 				</b-row>
@@ -95,10 +98,13 @@
 					</b-dropdown-form>
 				</b-dropdown>
 				<b-button class="m-md-2" variant="primary" @click="analyze()">Analyze!</b-button>
+				<b-spinner v-if="analysisLoading" label="Spinning"></b-spinner>
 			</b-card>
+			<!-- FILTER SECTION END -->
 		</b-row>
 		<b-row>
-			<b-col>
+			<!-- BANK DISPLAY START -->
+			<b-col cols="4">
 				<bank-display
 					v-for="(item, index) in dbData"
 					:key="index"
@@ -116,8 +122,11 @@
 					>{{ item.short_name }}</b-form-radio>
 				</b-form-group>
 			</b-col>
+			<!-- BANK DISPLAY END -->
 
+			<!-- CHESSBOARD START -->
 			<div id="board" style="width: 500px"></div>
+			<!-- CHESSBOARD END -->
 		</b-row>
 	</b-container>
 </template>
@@ -146,8 +155,9 @@ export default {
 			heatmaps: [],
 			selectedBank: 0,
 			selectedHeatmap: 0,
-			analysisName: '',
-			nGames: '',
+			analysisName: 'Franz',
+			nGames: 1000,
+			analysisLoading: false,
 			gameFilter: {
 				whitePlayer: '',
 				blackPlayer: '',
@@ -184,7 +194,9 @@ export default {
 	},
 
 	methods: {
+		// send analysis request to server
 		async analyze() {
+			this.analysisLoading = true
 			await this.$axios.$post(`http://${server}:${port}/analyze/runbatch`, {
 				path: './test/lichess_db_standard_rated_2013-12.pgn',
 				// path: './test/YanSch_Gimker.pgn',
@@ -198,34 +210,10 @@ export default {
 			this.selectedBank = this.dbData.length - 1
 			console.log(this.selectedBank)
 			this.generateHeatmap(this.lastMoSquare)
-		},
-		drawHeatmap(data) {
-			const autoscale = true
-			board.drawHeatmap(
-				data[0],
-				autoscale ? data[1] : 0,
-				autoscale ? data[2] : 100,
-				{
-					unit: this.heatmaps[this.selectedHeatmap].unit,
-					animTime: 0.5,
-					scaling: (val, max) => {
-						return val / max
-					},
-					disableSquares: true,
-					color: [3, 173, 252]
-				}
-			)
+			this.analysisLoading = false
 		},
 
-		chessboardMouseOver(square) {
-			this.lastMoSquare = square
-			if (
-				this.dbData.length > 0 &&
-				this.heatmaps[this.selectedHeatmap].scope !== 'global'
-			) {
-				this.generateHeatmap(square)
-			}
-		},
+		// send heatmap request to server
 		async generateHeatmap(square) {
 			if (this.dbData.length > 0) {
 				const data = await this.$axios.$post(
@@ -239,15 +227,43 @@ export default {
 				this.drawHeatmap(data)
 			}
 		},
+
+		// get available analyses from server
 		async syncDb() {
 			this.dbData = await this.$axios.$get(
 				`http://${server}:${port}/analyze/db`
 			)
 		},
+
+		// get available heatmaps from server
 		async getHeatmaps() {
 			this.heatmaps = await this.$axios.$get(
 				`http://${server}:${port}/analyze/heatmaps`
 			)
+		},
+
+		// draw heatmap
+		drawHeatmap(data) {
+			board.drawHeatmap(data[0], data[1], data[2], {
+				unit: this.heatmaps[this.selectedHeatmap].unit,
+				animTime: 0.5,
+				scaling: (val, max) => {
+					return val / max
+				},
+				disableSquares: true,
+				color: [3, 173, 252]
+			})
+		},
+
+		// mouseover function for chessboard
+		chessboardMouseOver(square) {
+			this.lastMoSquare = square
+			if (
+				this.dbData.length > 0 &&
+				this.heatmaps[this.selectedHeatmap].scope !== 'global'
+			) {
+				this.generateHeatmap(square)
+			}
 		}
 	}
 }
