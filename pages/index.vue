@@ -4,31 +4,95 @@
 
 		<b-row>
 			<b-card>
-				<b-form-input placeholder="Name your analysis!"></b-form-input>
-				<b-dropdown text="White Player" class="m-md-2">
-					<b-dropdown-item>First Action</b-dropdown-item>
-					<b-dropdown-item>Second Action</b-dropdown-item>
-					<b-dropdown-item>Third Action</b-dropdown-item>
+				<b-row>
+					<b-col>
+						<b-form-input v-model="analysisName" placeholder="Give your analysis a name"></b-form-input>
+					</b-col>
+					<b-col>
+						<b-form-input v-model="nGames" placeholder="How many games?"></b-form-input>
+					</b-col>
+				</b-row>
+				<b-dropdown text="White Player">
+					<b-dropdown-form>
+						<b-form-input v-model="gameFilter.whitePlayer" placeholder="Name"></b-form-input>
+					</b-dropdown-form>
 				</b-dropdown>
-				<b-dropdown text="Black Player" class="m-md-2">
-					<b-dropdown-item>First Action</b-dropdown-item>
-					<b-dropdown-item>Second Action</b-dropdown-item>
-					<b-dropdown-item>Third Action</b-dropdown-item>
+				<b-dropdown text="Black Player">
+					<b-dropdown-form>
+						<b-form-input v-model="gameFilter.blackPlayer" placeholder="Name"></b-form-input>
+					</b-dropdown-form>
 				</b-dropdown>
-				<b-dropdown text="White Elo" class="m-md-2">
-					<b-dropdown-item>First Action</b-dropdown-item>
-					<b-dropdown-item>Second Action</b-dropdown-item>
-					<b-dropdown-item>Third Action</b-dropdown-item>
+				<b-dropdown text="White Elo">
+					<b-dropdown-form>
+						<b-row>
+							<b-col>
+								Min
+								<b-form-input v-model="gameFilter.whiteElo[0]" placeholder="min"></b-form-input>
+							</b-col>
+							<b-col>
+								Max
+								<b-form-input v-model="gameFilter.whiteElo[1]" placeholder="max"></b-form-input>
+							</b-col>
+						</b-row>
+						<vue-slider
+							class="elo-slider"
+							v-model="gameFilter.whiteElo"
+							:min="0"
+							:max="maxElo"
+							:tooltip="'none'"
+						></vue-slider>
+					</b-dropdown-form>
 				</b-dropdown>
-				<b-dropdown text="Black Elo" class="m-md-2">
-					<b-dropdown-item>First Action</b-dropdown-item>
-					<b-dropdown-item>Second Action</b-dropdown-item>
-					<b-dropdown-item>Third Action</b-dropdown-item>
+				<b-dropdown text="Black Elo">
+					<b-dropdown-form>
+						<b-row>
+							<b-col>
+								Min
+								<b-form-input v-model="gameFilter.blackElo[0]" placeholder="min"></b-form-input>
+							</b-col>
+							<b-col>
+								Max
+								<b-form-input v-model="gameFilter.blackElo[1]" placeholder="max"></b-form-input>
+							</b-col>
+						</b-row>
+						<vue-slider
+							class="elo-slider"
+							v-model="gameFilter.blackElo"
+							:min="0"
+							:max="maxElo"
+							:tooltip="'none'"
+						></vue-slider>
+					</b-dropdown-form>
 				</b-dropdown>
-				<b-dropdown text="Variant" class="m-md-2">
-					<b-dropdown-item>First Action</b-dropdown-item>
-					<b-dropdown-item>Second Action</b-dropdown-item>
-					<b-dropdown-item>Third Action</b-dropdown-item>
+				<b-dropdown text="Elo Difference">
+					<b-dropdown-form>
+						<b-row>
+							<b-col>
+								Min
+								<b-form-input v-model="gameFilter.eloDiff[0]" placeholder="min"></b-form-input>
+							</b-col>
+							<b-col>
+								Max
+								<b-form-input v-model="gameFilter.eloDiff[1]" placeholder="max"></b-form-input>
+							</b-col>
+						</b-row>
+						<vue-slider
+							class="elo-slider"
+							v-model="gameFilter.eloDiff"
+							:min="0"
+							:max="1500"
+							:tooltip="'none'"
+						></vue-slider>
+					</b-dropdown-form>
+				</b-dropdown>
+				<b-dropdown text="Result">
+					<b-dropdown-form>
+						<b-form-checkbox-group v-model="gameFilter.result">
+							<b-form-checkbox value="1-0">White win</b-form-checkbox>
+							<b-form-checkbox value="1/2-1/2">Draw</b-form-checkbox>
+							<b-form-checkbox value="0-1">Black win</b-form-checkbox>
+						</b-form-checkbox-group>
+					</b-dropdown-form>
 				</b-dropdown>
 				<b-button class="m-md-2" variant="primary" @click="analyze()">Analyze!</b-button>
 			</b-card>
@@ -59,22 +123,39 @@
 </template>
 
 <script>
+import VueSlider from 'vue-slider-component/dist-css/vue-slider-component.umd.min'
+import 'vue-slider-component/dist-css/vue-slider-component.css'
+import 'vue-slider-component/theme/default.css'
 import BankDisplay from '@/components/BankDisplay'
 
 const server = 'localhost' // 'raspi-4'
 const port = 3001
 let board
+
 export default {
 	components: {
-		'bank-display': BankDisplay
+		BankDisplay,
+		VueSlider
 	},
 	data() {
+		const maxElo = 3000
 		return {
+			maxElo,
 			lastMoSquare: 'a1',
 			dbData: [],
 			heatmaps: [],
 			selectedBank: 0,
-			selectedHeatmap: 0
+			selectedHeatmap: 0,
+			analysisName: '',
+			nGames: '',
+			gameFilter: {
+				whitePlayer: '',
+				blackPlayer: '',
+				whiteElo: [0, maxElo],
+				blackElo: [0, maxElo],
+				eloDiff: [0, 1500],
+				result: ['1-0', '1/2-1/2', '0-1']
+			}
 		}
 	},
 	watch: {
@@ -107,10 +188,15 @@ export default {
 			await this.$axios.$post(`http://${server}:${port}/analyze/runbatch`, {
 				path: './test/lichess_db_standard_rated_2013-12.pgn',
 				// path: './test/YanSch_Gimker.pgn',
-				// path: '../pgn/lichess_db_standard_rated_2013-01_min.pgn',
-				trackers: ['GameTrackerBase', 'PieceTrackerBase', 'TileTrackerBase']
+				// path: './test/lichess_db_standard_rated_2013-01_min.pgn',
+				trackers: ['GameTrackerBase', 'PieceTrackerBase', 'TileTrackerBase'],
+				name: this.analysisName,
+				nGames: this.nGames,
+				filter: this.gameFilter
 			})
-			this.syncDb()
+			await this.syncDb()
+			this.selectedBank = this.dbData.length - 1
+			console.log(this.selectedBank)
 			this.generateHeatmap(this.lastMoSquare)
 		},
 		drawHeatmap(data) {
@@ -172,5 +258,9 @@ export default {
 
 .basic-container {
 	min-height: 100vh;
+}
+
+.elo-slider {
+	width: 150px !important;
 }
 </style>
