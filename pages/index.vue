@@ -15,6 +15,13 @@
 						<b-form-input v-model="nGames" placeholder="How many games?"></b-form-input>
 					</b-col>
 				</b-row>
+				<b-dropdown :text="'File: ' + pgnFiles.list[pgnFiles.selected]">
+					<b-dd-item
+						v-for="(item, index) in pgnFiles.list"
+						:key="index"
+						@click="pgnFiles.selected = index"
+					>{{ pgnFiles.list[index] }}</b-dd-item>
+				</b-dropdown>
 				<b-dropdown text="White Player">
 					<b-dropdown-form>
 						<b-form-input v-model="gameFilter.whitePlayer" placeholder="Name"></b-form-input>
@@ -106,12 +113,12 @@
 			<b-col cols="4">
 				<!-- BANK DISPLAY START -->
 				<bank-display
-					v-for="(item, index) in dbData"
+					v-for="(item, index) in banks.list"
 					:key="index"
 					:nr="index"
 					:data="item"
-					:is-selected="selectedBank === index"
-					@clicked="selectedBank = index"
+					:is-selected="banks.selected === index"
+					@clicked="banks.selected = index"
 					@delete="deleteDbEntry($event)"
 				/>
 				<!-- BANK DISPLAY END -->
@@ -119,9 +126,9 @@
 				<!-- HEATMAP DISPLAY START -->
 				<b-form-group label="Available Heatmaps">
 					<b-form-radio
-						v-for="(item, index) in heatmaps"
+						v-for="(item, index) in heatmaps.list"
 						:key="index"
-						v-model="selectedHeatmap"
+						v-model="heatmaps.selected"
 						:value="index"
 					>{{ item.short_name }}</b-form-radio>
 				</b-form-group>
@@ -156,10 +163,18 @@ export default {
 		return {
 			maxElo,
 			lastMoSquare: 'a1',
-			dbData: [],
-			heatmaps: [],
-			selectedBank: 0,
-			selectedHeatmap: 0,
+			banks: {
+				list: [],
+				selected: 0
+			},
+			heatmaps: {
+				list: [],
+				selected: 0
+			},
+			pgnFiles: {
+				list: [],
+				selected: 0
+			},
 			comparison: false,
 			analysisName: 'Franz',
 			nGames: 1000,
@@ -172,6 +187,14 @@ export default {
 				eloDiff: [0, 1500],
 				result: ['1-0', '1/2-1/2', '0-1']
 			}
+		}
+	},
+	computed: {
+		selectedBank() {
+			return this.banks.selected
+		},
+		selectedHeatmap() {
+			return this.heatmaps.selected
 		}
 	},
 	watch: {
@@ -189,6 +212,7 @@ export default {
 		;(async () => {
 			await this.syncDb()
 			await this.getHeatmaps()
+			await this.getAvailableFiles()
 		})()
 	},
 	mounted() {
@@ -207,31 +231,29 @@ export default {
 		async analyze() {
 			this.analysisLoading = true
 			await this.$axios.$post(`http://${server}:${port}/analyze/runbatch`, {
-				path: './test/lichess_db_standard_rated_2013-12.pgn',
-				// path: './test/YanSch_Gimker.pgn',
-				// path: './test/lichess_db_standard_rated_2013-01_min.pgn',
+				path: this.pgnFiles.list[this.pgnFiles.selected],
 				trackers: ['GameTrackerBase', 'PieceTrackerBase', 'TileTrackerBase'],
 				name: this.analysisName,
 				nGames: this.nGames,
 				filter: this.gameFilter
 			})
 			await this.syncDb()
-			this.selectedBank = this.dbData.length - 1
-			console.log(this.selectedBank)
+			this.banks.selected = this.banks.list.length - 1
+			console.log(this.banks.selected)
 
 			this.analysisLoading = false
 		},
 
 		// send heatmap request to server
 		async generateHeatmap(square) {
-			if (this.dbData.length > 0) {
+			if (this.banks.list.length > 0) {
 				const data = await this.$axios.$post(
 					`http://${server}:${port}/analyze/generateheatmap`,
 					{
 						id: this.comparison
-							? [this.selectedBank, this.selectedBank + 1]
-							: [this.selectedBank],
-						name: this.heatmaps[this.selectedHeatmap].short_name,
+							? [this.banks.selected, this.banks.selected + 1]
+							: [this.banks.selected],
+						name: this.heatmaps.list[this.heatmaps.selected].short_name,
 						square
 					}
 				)
@@ -241,21 +263,26 @@ export default {
 
 		// get available analyses from server
 		async syncDb() {
-			this.dbData = await this.$axios.$get(
+			this.banks.list = await this.$axios.$get(
 				`http://${server}:${port}/analyze/db`
 			)
 		},
 		async deleteDbEntry(nr) {
 			await this.$axios.$delete(`http://${server}:${port}/analyze/${nr}`)
 			await this.syncDb()
-			if (this.selectedBank > this.dbData.length - 1) {
-				this.selectedBank = this.dbData.length - 1
+			if (this.banks.selected > this.banks.list.length - 1) {
+				this.banks.selected = this.banks.list.length - 1
 			}
 		},
 		// get available heatmaps from server
 		async getHeatmaps() {
-			this.heatmaps = await this.$axios.$get(
+			this.heatmaps.list = await this.$axios.$get(
 				`http://${server}:${port}/analyze/heatmaps`
+			)
+		},
+		async getAvailableFiles() {
+			this.pgnFiles.list = await this.$axios.$get(
+				`http://${server}:${port}/analyze/files`
 			)
 		},
 
@@ -271,7 +298,7 @@ export default {
 				})
 			} else {
 				board.drawHeatmap(data[0], data[1], data[2], {
-					unit: this.heatmaps[this.selectedHeatmap].unit,
+					unit: this.heatmaps.list[this.heatmaps.selected].unit,
 					animTime: 0.5,
 					scaling: (val, max) => {
 						return val / max
@@ -286,8 +313,8 @@ export default {
 		chessboardMouseOver(square) {
 			this.lastMoSquare = square
 			if (
-				this.dbData.length > 0 &&
-				this.heatmaps[this.selectedHeatmap].scope !== 'global'
+				this.banks.list.length > 0 &&
+				this.heatmaps.list[this.heatmaps.selected].scope !== 'global'
 			) {
 				this.generateHeatmap(square)
 			}
