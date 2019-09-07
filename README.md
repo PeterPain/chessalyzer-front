@@ -20,6 +20,3 @@ $ npm run generate
 ```
 
 For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).
-
-TODO:
-Delete chokidar dep, when bug is fixed in parent package
