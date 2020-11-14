@@ -1,21 +1,56 @@
 <template>
-	<div @click="$emit('clicked')" class="bank-display">
+	<div class="bank-display" @click="$emit('clicked')">
 		<b-row no-gutters>
-			<div class="nr-display" :class="{ selected: isSelected }" align="center">{{ nr }}</div>
+			<div
+				class="nr-display"
+				:class="{ selected: isSelected }"
+				align="center"
+			>
+				{{ nr }}
+			</div>
 			<b-col class="info-display align-self-center">
-				<b>{{ data.name + ": "}}</b>
-				{{ data.cntGames + " games (" + data.cntMoves + " moves)"}}
+				<b>{{ data.name + ': ' }}</b>
+				{{ data.cntGames + ' games (' + data.cntMoves + ' moves)' }}
 				<div v-if="isSelected" class="filter-section">
 					Filter
 					<ul>
-						<li>White Player: {{ data.filter.whitePlayer === '' ? 'All' : data.filter.whitePlayer }}</li>
-						<li>Black Player: {{ data.filter.blackPlayer === '' ? 'All' : data.filter.blackPlayer }}</li>
-						<li>White Elo: {{ data.filter.whiteElo[0] }} to {{ data.filter.whiteElo[1] }}</li>
-						<li>Black Elo: {{ data.filter.blackElo[0] }} to {{ data.filter.blackElo[1] }}</li>
-						<li>Elo difference: {{ data.filter.eloDiff[0] }} to {{ data.filter.eloDiff[1] }}</li>
+						<li>
+							White Player:
+							{{
+								data.filter.whitePlayer === ''
+									? 'All'
+									: data.filter.whitePlayer
+							}}
+						</li>
+						<li>
+							Black Player:
+							{{
+								data.filter.blackPlayer === ''
+									? 'All'
+									: data.filter.blackPlayer
+							}}
+						</li>
+						<li>
+							White Elo: {{ data.filter.whiteElo[0] }} to
+							{{ data.filter.whiteElo[1] }}
+						</li>
+						<li>
+							Black Elo: {{ data.filter.blackElo[0] }} to
+							{{ data.filter.blackElo[1] }}
+						</li>
+						<li>
+							Elo difference: {{ data.filter.eloDiff[0] }} to
+							{{ data.filter.eloDiff[1] }}
+						</li>
 						<li>Result: {{ data.filter.result }}</li>
 					</ul>
-					<b-button @click="$emit('delete', nr)" size="sm" variant="danger">Delete</b-button>
+					<b-button
+						size="sm"
+						variant="danger"
+						@click="$emit('delete', nr)"
+					>
+						Delete
+					</b-button>
 				</div>
 			</b-col>
 		</b-row>

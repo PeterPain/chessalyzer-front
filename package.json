@@ -13,27 +13,19 @@
 		"generate": "nuxt generate"
 	},
 	"dependencies": {
-		"@nuxtjs/axios": "^5.8.0",
-		"bootstrap": "^4.3.1",
-		"bootstrap-vue": "^2.0.4",
-		"jquery": "^3.4.1",
+		"@nuxtjs/axios": "^5.12.2",
+		"bootstrap": "^4.5.3",
+		"bootstrap-vue": "^2.19.0",
+		"jquery": "^3.5.1",
 		"jquery-color": "^3.0.0-alpha.1",
-		"nuxt": "^2.10.2",
-		"vue-slider-component": "^3.0.41"
+		"nuxt": "^2.14.7",
+		"vue-slider-component": "^3.2.10"
 	},
 	"devDependencies": {
-		"@nuxtjs/eslint-config": "^1.1.2",
-		"@nuxtjs/eslint-module": "^1.1.0",
-		"babel-eslint": "^10.0.3",
-		"eslint": "^6.6.0",
-		"eslint-config-standard": "^14.1.0",
-		"eslint-plugin-import": "^2.18.2",
-		"eslint-plugin-jest": "^22.21.0",
-		"eslint-plugin-node": "^10.0.0",
-		"eslint-plugin-nuxt": ">=0.4.3",
-		"eslint-plugin-promise": ">=4.2.1",
-		"eslint-plugin-standard": "^4.0.1",
-		"eslint-plugin-vue": "^5.2.3",
-		"nodemon": "^1.19.4"
+		"@nuxtjs/eslint-config": "^5.0.0",
+		"@nuxtjs/eslint-module": "^3.0.1",
+		"babel-eslint": "^10.1.0",
+		"eslint": "^7.13.0",
+		"eslint-plugin-nuxt": "^2.0.0"
 	}
 }

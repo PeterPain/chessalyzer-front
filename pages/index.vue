@@ -8,11 +8,17 @@
 				<b-row>
 					<b-col>
 						Name
-						<b-form-input v-model="analysisName" placeholder="Give your analysis a name"></b-form-input>
+						<b-form-input
+							v-model="analysisName"
+							placeholder="Give your analysis a name"
+						></b-form-input>
 					</b-col>
 					<b-col>
 						Amount of games
-						<b-form-input v-model="nGames" placeholder="How many games?"></b-form-input>
+						<b-form-input
+							v-model="nGames"
+							placeholder="How many games?"
+						></b-form-input>
 					</b-col>
 				</b-row>
 				<b-dropdown :text="'File: ' + pgnFiles.list[pgnFiles.selected]">
@@ -20,16 +26,24 @@
 						v-for="(item, index) in pgnFiles.list"
 						:key="index"
 						@click="pgnFiles.selected = index"
-					>{{ pgnFiles.list[index] }}</b-dd-item>
+					>
+						{{ pgnFiles.list[index] }}
+					</b-dd-item>
 				</b-dropdown>
 				<b-dropdown text="White Player">
 					<b-dropdown-form>
-						<b-form-input v-model="gameFilter.whitePlayer" placeholder="Name"></b-form-input>
+						<b-form-input
+							v-model="gameFilter.whitePlayer"
+							placeholder="Name"
+						></b-form-input>
 					</b-dropdown-form>
 				</b-dropdown>
 				<b-dropdown text="Black Player">
 					<b-dropdown-form>
-						<b-form-input v-model="gameFilter.blackPlayer" placeholder="Name"></b-form-input>
+						<b-form-input
+							v-model="gameFilter.blackPlayer"
+							placeholder="Name"
+						></b-form-input>
 					</b-dropdown-form>
 				</b-dropdown>
 				<b-dropdown text="White Elo">
@@ -37,11 +51,17 @@
 						<b-row>
 							<b-col>
 								Min
-								<b-form-input v-model="gameFilter.whiteElo[0]" placeholder="min"></b-form-input>
+								<b-form-input
+									v-model="gameFilter.whiteElo[0]"
+									placeholder="min"
+								></b-form-input>
 							</b-col>
 							<b-col>
 								Max
-								<b-form-input v-model="gameFilter.whiteElo[1]" placeholder="max"></b-form-input>
+								<b-form-input
+									v-model="gameFilter.whiteElo[1]"
+									placeholder="max"
+								></b-form-input>
 							</b-col>
 						</b-row>
 						<vue-slider
@@ -58,11 +78,17 @@
 						<b-row>
 							<b-col>
 								Min
-								<b-form-input v-model="gameFilter.blackElo[0]" placeholder="min"></b-form-input>
+								<b-form-input
+									v-model="gameFilter.blackElo[0]"
+									placeholder="min"
+								></b-form-input>
 							</b-col>
 							<b-col>
 								Max
-								<b-form-input v-model="gameFilter.blackElo[1]" placeholder="max"></b-form-input>
+								<b-form-input
+									v-model="gameFilter.blackElo[1]"
+									placeholder="max"
+								></b-form-input>
 							</b-col>
 						</b-row>
 						<vue-slider
@@ -79,11 +105,17 @@
 						<b-row>
 							<b-col>
 								Min
-								<b-form-input v-model="gameFilter.eloDiff[0]" placeholder="min"></b-form-input>
+								<b-form-input
+									v-model="gameFilter.eloDiff[0]"
+									placeholder="min"
+								></b-form-input>
 							</b-col>
 							<b-col>
 								Max
-								<b-form-input v-model="gameFilter.eloDiff[1]" placeholder="max"></b-form-input>
+								<b-form-input
+									v-model="gameFilter.eloDiff[1]"
+									placeholder="max"
+								></b-form-input>
 							</b-col>
 						</b-row>
 						<vue-slider
@@ -98,13 +130,21 @@
 				<b-dropdown text="Result">
 					<b-dropdown-form>
 						<b-form-checkbox-group v-model="gameFilter.result">
-							<b-form-checkbox value="1-0">White win</b-form-checkbox>
-							<b-form-checkbox value="1/2-1/2">Draw</b-form-checkbox>
-							<b-form-checkbox value="0-1">Black win</b-form-checkbox>
+							<b-form-checkbox value="1-0">
+								White win
+							</b-form-checkbox>
+							<b-form-checkbox value="1/2-1/2">
+								Draw
+							</b-form-checkbox>
+							<b-form-checkbox value="0-1">
+								Black win
+							</b-form-checkbox>
 						</b-form-checkbox-group>
 					</b-dropdown-form>
 				</b-dropdown>
-				<b-button class="m-md-2" variant="primary" @click="analyze()">Analyze!</b-button>
+				<b-button class="m-md-2" variant="primary" @click="analyze()">
+					Analyze!
+				</b-button>
 				<b-spinner v-if="analysisLoading" label="Spinning"></b-spinner>
 			</b-card>
 			<!-- FILTER SECTION END -->
@@ -130,10 +170,14 @@
 						:key="index"
 						v-model="heatmaps.selected"
 						:value="index"
-					>{{ item.short_name }}</b-form-radio>
+					>
+						{{ item.short_name }}
+					</b-form-radio>
 				</b-form-group>
 				<!-- HEATMAP DISPLAY END -->
-				<b-form-checkbox v-model="comparison">Comparison Heatmap</b-form-checkbox>
+				<b-form-checkbox v-model="comparison">
+					Comparison Heatmap
+				</b-form-checkbox>
 			</b-col>
 
 			<!-- CHESSBOARD START -->
@@ -230,13 +274,20 @@ export default {
 		// send analysis request to server
 		async analyze() {
 			this.analysisLoading = true
-			await this.$axios.$post(`http://${server}:${port}/analyze/runbatch`, {
-				path: this.pgnFiles.list[this.pgnFiles.selected],
-				trackers: ['GameTrackerBase', 'PieceTrackerBase', 'TileTrackerBase'],
-				name: this.analysisName,
-				nGames: this.nGames,
-				filter: this.gameFilter
-			})
+			await this.$axios.$post(
+				`http://${server}:${port}/analyze/runbatch`,
+				{
+					path: this.pgnFiles.list[this.pgnFiles.selected],
+					trackers: [
+						'GameTrackerBase',
+						'PieceTrackerBase',
+						'TileTrackerBase'
+					],
+					name: this.analysisName,
+					nGames: this.nGames,
+					filter: this.gameFilter
+				}
+			)
 			await this.syncDb()
 			this.banks.selected = this.banks.list.length - 1
 			console.log(this.banks.selected)
@@ -253,7 +304,8 @@ export default {
 						id: this.comparison
 							? [this.banks.selected, this.banks.selected + 1]
 							: [this.banks.selected],
-						name: this.heatmaps.list[this.heatmaps.selected].short_name,
+						name: this.heatmaps.list[this.heatmaps.selected]
+							.short_name,
 						square
 					}
 				)
