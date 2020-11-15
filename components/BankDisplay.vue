@@ -61,9 +61,9 @@
 export default {
 	name: 'BankDisplay',
 	props: {
-		nr: { type: Number },
-		data: { type: Object },
-		isSelected: { type: Boolean }
+		nr: { type: Number, required: true },
+		data: { type: Object, required: true },
+		isSelected: { type: Boolean, required: true }
 	}
 }
 </script>
@@ -77,7 +77,7 @@ export default {
 }
 
 .info-display {
-	padding-left: 5px;
+	padding: 1rem;
 }
 .bank-display:hover {
 	background-color: lightgray;

@@ -1,6 +1,6 @@
 <template>
-	<b-container>
-		<div class="dark">
+	<b-container class="main d-flex flex-column">
+		<div class="main-header">
 			<b-row no-gutters align-v="center">
 				<b-img src="~/static/logo.svg" width="50"></b-img>
 				<b-col>
@@ -8,17 +8,18 @@
 				</b-col>
 			</b-row>
 		</div>
-		<b-row no-gutters>
+
+		<b-row class="flex-grow-1" no-gutters>
 			<!-- Sidebar -->
-			<div class="bg-light side">
-				<b-list-group>
+			<b-col cols="2">
+				<b-list-group class="side-entries">
 					<b-list-group-item href="#">Analyze</b-list-group-item>
 					<b-list-group-item href="#">Else</b-list-group-item>
 				</b-list-group>
-			</div>
+			</b-col>
 			<!-- /Sidebar -->
 			<!-- Page Content -->
-			<b-col>
+			<b-col class="d-flex">
 				<nuxt />
 			</b-col>
 		</b-row>
@@ -26,14 +27,20 @@
 </template>
 
 <style>
-.dark {
+.main {
+	padding: 0;
+	min-height: 100vh;
+	background-color: white;
+}
+
+.main-header {
 	background-color: rgb(37, 65, 97);
 	padding: 5px 5px 5px 10px;
 	color: white;
 }
 
-.side {
-	width: 200px;
+.side-entries {
+	border-radius: 0;
 }
 
 .chessalyzer-title {
