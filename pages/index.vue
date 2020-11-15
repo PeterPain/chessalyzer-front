@@ -341,7 +341,7 @@ export default {
 		// draw heatmap
 		drawHeatmap(data) {
 			if (this.comparison) {
-				board.drawComparisonHeatmap(data[0], data[1], data[2], {
+				board.drawComparisonHeatmap(data.map, data.min, data.max, {
 					animTime: 0.5,
 					scaling: (val, max) => {
 						return val / max
@@ -349,7 +349,7 @@ export default {
 					disableSquares: true
 				})
 			} else {
-				board.drawHeatmap(data[0], data[1], data[2], {
+				board.drawHeatmap(data.map, data.min, data.max, {
 					unit: this.heatmaps.list[this.heatmaps.selected].unit,
 					animTime: 0.5,
 					scaling: (val, max) => {
